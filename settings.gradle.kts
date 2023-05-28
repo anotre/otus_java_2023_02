@@ -11,3 +11,4 @@ pluginManagement {
         id("com.github.johnrengelman.shadow") version johnrengelmanShadow
     }
 }
+include("l19hw09-jdbc")
