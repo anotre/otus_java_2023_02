@@ -10,7 +10,6 @@ import ru.otus.crm.model.Client;
 import ru.otus.crm.model.Manager;
 import ru.otus.crm.service.DbServiceClientImpl;
 import ru.otus.crm.service.DbServiceManagerImpl;
-import ru.otus.factory.EntityFactory;
 import ru.otus.jdbc.mapper.*;
 import javax.sql.DataSource;
 
@@ -29,22 +28,15 @@ public class HomeWork {
         var dbExecutor = new DbExecutorImpl();
 
 // Работа с клиентом
-
-        EntityClassMetaData<Client> entityClassMetaDataClient = new EntityClassMetaDataImpl<>(Client.class);
-        EntitySQLMetaData entitySQLMetaDataClient = new EntitySQLMetaDataImpl(entityClassMetaDataClient);
-
-        EntityFactory<Client> clientFactory = new EntityFactory<>(
-                Client.class,
-                entityClassMetaDataClient.getConstructor());
-        EntityResultSetArgsCombiner<Client> clientArgsCombiner = new EntityResultSetArgsCombiner<>(entityClassMetaDataClient);
-        EntityClassDataProvider<Client> clientDataProvider = new EntityClassDataProvider<>(Client.class);
+        Class<Client> clientClass = Client.class;
+        EntityClassMetaData<Client> entityClassMetaDataClient = new EntityClassMetaDataImpl<>(clientClass);
+        var entitySQLMetaDataClient = new EntitySQLMetaDataImpl<Client>(entityClassMetaDataClient);
 
         var dataTemplateClient = new DataTemplateJdbc<Client>(
                 dbExecutor,
+                entityClassMetaDataClient,
                 entitySQLMetaDataClient,
-                clientFactory,
-                clientArgsCombiner,
-                clientDataProvider); //реализация DataTemplate, универсальная
+                clientClass); //реализация DataTemplate, универсальная
 
 // Код дальше должен остаться
         var dbServiceClient = new DbServiceClientImpl(transactionRunner, dataTemplateClient);
@@ -56,22 +48,15 @@ public class HomeWork {
         log.info("clientSecondSelected:{}", clientSecondSelected);
 
 // Сделайте тоже самое с классом Manager (для него надо сделать свою таблицу)
-
-        EntityClassMetaData<Manager> entityClassMetaDataManager = new EntityClassMetaDataImpl<>(Manager.class);
-        EntitySQLMetaData entitySQLMetaDataManager = new EntitySQLMetaDataImpl(entityClassMetaDataManager);
-
-        EntityFactory<Manager> managerFactory = new EntityFactory<>(
-                Manager.class,
-                entityClassMetaDataManager.getConstructor());
-        EntityResultSetArgsCombiner<Manager> managerArgsCombiner = new EntityResultSetArgsCombiner<>(entityClassMetaDataManager);
-        EntityClassDataProvider<Manager> managerDataProvider = new EntityClassDataProvider<>(Manager.class);
+        Class<Manager> managerClass = Manager.class;
+        EntityClassMetaData<Manager> entityClassMetaDataManager = new EntityClassMetaDataImpl<>(managerClass);
+        var entitySQLMetaDataManager = new EntitySQLMetaDataImpl<Manager>(entityClassMetaDataManager);
 
         var dataTemplateManager = new DataTemplateJdbc<Manager>(
                 dbExecutor,
+                entityClassMetaDataManager,
                 entitySQLMetaDataManager,
-                managerFactory,
-                managerArgsCombiner,
-                managerDataProvider);
+                managerClass);
 
         var dbServiceManager = new DbServiceManagerImpl(transactionRunner, dataTemplateManager);
         dbServiceManager.saveManager(new Manager("ManagerFirst"));
@@ -92,5 +77,4 @@ public class HomeWork {
         log.info("db migration finished.");
         log.info("***");
     }
-
 }

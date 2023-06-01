@@ -6,46 +6,52 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 import ru.otus.crm.service.annotation.Id;
-import ru.otus.crm.service.annotation.EntityConstructor;
 
 public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
-    private final String tableName;
-    private final Map<String, Field> fields = new HashMap<>();
+    private final String entityName;
+    private final List<Field> fields = new ArrayList<>();
+    private final List<Field> fieldsWithoutId = new ArrayList<>();
     private final Class<T> clazz;
     private final Constructor<T> constructor;
-    private String idFieldName;
+    private Field idField;
 
     public EntityClassMetaDataImpl(Class<T> clazz) {
-        this.tableName = clazz.getSimpleName();
+        this.entityName = clazz.getSimpleName();
         this.clazz = clazz;
-        this.constructor = this.findConstructor(clazz);
 
         Arrays.stream(clazz.getDeclaredFields()).forEach(field -> {
-            String fieldName = field.getName();
             if (field.isAnnotationPresent(Id.class)) {
-                if (Objects.nonNull(this.idFieldName)) {
+                if (Objects.nonNull(this.idField)) {
                     throw new RuntimeException(String.format(
                             "Cannot be more than one @Id annotated field in %s class.",
                             this.clazz.getCanonicalName()));
                 }
 
-                this.idFieldName = fieldName;
+                fields.add(field);
+                this.idField = field;
+            } else {
+                this.fieldsWithoutId.add(field);
+                this.fields.add(field);
             }
 
-            this.fields.put(fieldName, field);
         });
 
-        if (Objects.isNull(this.idFieldName)) {
+        if (Objects.isNull(this.idField)) {
             throw new RuntimeException(String.format(
                     "No @Id annotated field found in %s class.",
                     this.clazz.getCanonicalName()));
         }
 
+        try {
+            this.constructor = clazz.getConstructor();
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public String getName() {
-        return this.tableName;
+        return this.entityName;
     }
 
     @Override
@@ -55,43 +61,16 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
 
     @Override
     public Field getIdField() {
-        return this.fields.get(this.idFieldName);
+        return this.idField;
     }
 
     @Override
     public List<Field> getAllFields() {
-        return List.copyOf(this.fields.values());
+        return List.copyOf(this.fields);
     }
 
     @Override
     public List<Field> getFieldsWithoutId() {
-        Map<String, Field> mapFieldsWithoutId = new HashMap<>(this.fields);
-        mapFieldsWithoutId.remove(this.idFieldName);
-
-        return List.copyOf(mapFieldsWithoutId.values());
-    }
-
-    @SuppressWarnings("unchecked")
-    private Constructor<T> findConstructor(Class<T> entityClass) {
-
-        Constructor<T> foundConstructor = null;
-
-        for (Constructor<?> constructor : entityClass.getConstructors()) {
-            if (constructor.isAnnotationPresent(EntityConstructor.class)) {
-                if (Objects.nonNull(foundConstructor)) {
-                    throw new RuntimeException(
-                            String.format("Cannot be more than one annotated constructor in %s class", this.tableName));
-                }
-
-                foundConstructor = (Constructor<T>) constructor;
-            }
-        }
-
-        if (Objects.isNull(foundConstructor)) {
-            throw new RuntimeException(
-                    String.format("A class %s must have one constructor explicitly annotated", this.tableName));
-        }
-
-        return foundConstructor;
+       return List.copyOf(this.fieldsWithoutId);
     }
 }

@@ -7,7 +7,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface FieldGetter {
+public @interface Accessor {
   public String fieldName() default "";
   public int isIdField() default 0;
+  public AccessorType type();
 }

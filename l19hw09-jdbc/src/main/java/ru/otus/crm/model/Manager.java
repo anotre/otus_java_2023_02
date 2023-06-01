@@ -17,39 +17,38 @@ public class Manager {
         this.label = label;
     }
 
-    @EntityConstructor
-    public Manager(
-            @ConstructorParam(fieldName="no") Long no,
-            @ConstructorParam(fieldName="label") String label,
-            @ConstructorParam(fieldName="param1") String param1) {
+    public Manager(Long no, String label, String param1) {
         this.no = no;
         this.label = label;
         this.param1 = param1;
     }
 
-    @FieldGetter(fieldName = "no", isIdField = 1)
+    @Accessor(fieldName = "no", isIdField = 1, type = AccessorType.GETTER)
     public Long getNo() {
         return no;
     }
 
+    @Accessor(fieldName = "no", type = AccessorType.SETTER)
     public void setNo(Long no) {
         this.no = no;
     }
 
-    @FieldGetter(fieldName = "label")
+    @Accessor(fieldName = "label", type = AccessorType.GETTER)
     public String getLabel() {
         return label;
     }
 
+    @Accessor(fieldName = "label", type = AccessorType.SETTER)
     public void setLabel(String label) {
         this.label = label;
     }
 
-    @FieldGetter(fieldName = "param1")
+    @Accessor(fieldName = "param1", type = AccessorType.GETTER)
     public String getParam1() {
         return param1;
     }
 
+    @Accessor(fieldName = "param1", type = AccessorType.SETTER)
     public void setParam1(String param1) {
         this.param1 = param1;
     }

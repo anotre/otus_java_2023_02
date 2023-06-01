@@ -5,20 +5,17 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class EntitySQLMetaDataImpl implements EntitySQLMetaData {
+public class EntitySQLMetaDataImpl<T> implements EntitySQLMetaData {
     private final String fieldsString;
     private final String placeholders;
     private final String tableName;
     private final String idFieldName;
-    private final int fieldsNumber;
 
-    public <T> EntitySQLMetaDataImpl(EntityClassMetaData<T> entityClassMetaData) {
+    public EntitySQLMetaDataImpl(EntityClassMetaData<T> entityClassMetaData) {
         this.fieldsString = getSortedFieldsString(entityClassMetaData.getFieldsWithoutId());
         this.idFieldName = entityClassMetaData.getIdField().getName().toLowerCase();
         this.placeholders = getPlaceholders(entityClassMetaData.getFieldsWithoutId().size());
         this.tableName = entityClassMetaData.getName().toLowerCase();
-        this.fieldsNumber = entityClassMetaData.getFieldsWithoutId().size();
-        System.out.println();
     }
 
     @Override
