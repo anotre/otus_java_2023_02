@@ -7,7 +7,6 @@ Client {
     @Id
     private Long id;
 
-    @Field
     private String name;
 
     public Client() {
