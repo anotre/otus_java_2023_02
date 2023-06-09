@@ -2,6 +2,7 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
 import org.gradle.plugins.ide.idea.model.IdeaLanguageLevel
 
+
 plugins {
     idea
     id("io.spring.dependency-management")
@@ -32,15 +33,18 @@ allprojects {
         dependencies {
             imports {
                 mavenBom(BOM_COORDINATES)
+
             }
         }
     }
+
     configurations.all {
         resolutionStrategy {
             failOnVersionConflict()
 
             force("javax.servlet:servlet-api:2.4")
             force("commons-logging:commons-logging:1.1.1")
+
         }
     }
 }
@@ -51,6 +55,7 @@ subprojects {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
@@ -77,6 +82,7 @@ tasks {
                 .toSortedMap()
                 .map { "${it.key}:${it.value}" }
                 .forEach(::println)
+
         }
     }
 }
