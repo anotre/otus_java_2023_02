@@ -12,4 +12,5 @@ pluginManagement {
     }
 }
 include("l19hw09-jdbc")
+include("l21hw10-jpql")
 
