@@ -1,24 +1,20 @@
 package ru.otus.crm.model;
 
+import java.util.List;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+@Entity
+@Table(name = "clients")
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
-@Table(name = "client")
+@AllArgsConstructor
+@EqualsAndHashCode
 public class Client implements Cloneable {
-
+    
     @Id
     @SequenceGenerator(name = "client_gen", sequenceName = "client_seq",
             initialValue = 1, allocationSize = 1)
@@ -29,19 +25,26 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
+    @JoinColumn(name = "address_id")
+    @Fetch(FetchMode.JOIN)
+    private Address address;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+    @JoinColumn(name = "client_id", nullable = false, updatable = false)
+    @Fetch(FetchMode.JOIN)
+    private List<Phone> phones;
+
     public Client(String name) {
         this.id = null;
         this.name = name;
-    }
-
-    public Client(Long id, String name) {
-        this.id = id;
-        this.name = name;
+        this.address = null;
+        this.phones = null;
     }
 
     @Override
     public Client clone() {
-        return new Client(this.id, this.name);
+        return new Client(this.id, this.name, this.address, this.phones);
     }
 
     @Override
@@ -49,6 +52,8 @@ public class Client implements Cloneable {
         return "Client{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", address=" + address +
+                ", phones=" + phones +
                 '}';
     }
 }

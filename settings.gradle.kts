@@ -1,5 +1,8 @@
 rootProject.name = "otusJava"
 
+include("l19hw09-jdbc")
+include("l21hw10-jpql")
+
 pluginManagement {
     val dependencyManagement: String by settings
     val springframeworkBoot: String by settings
@@ -11,6 +14,5 @@ pluginManagement {
         id("com.github.johnrengelman.shadow") version johnrengelmanShadow
     }
 }
-include("l19hw09-jdbc")
-include("l21hw10-jpql")
+
 

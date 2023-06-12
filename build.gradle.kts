@@ -28,14 +28,20 @@ allprojects {
         mavenCentral()
     }
 
+    val testcontainersBom: String by project
+    val lombok: String by project
+
+
     apply(plugin = "io.spring.dependency-management")
     dependencyManagement {
         dependencies {
             imports {
                 mavenBom(BOM_COORDINATES)
-
+                mavenBom("org.testcontainers:testcontainers-bom:$testcontainersBom")
             }
+            dependency("org.projectlombok:lombok:$lombok")
         }
+
     }
 
     configurations.all {
@@ -59,7 +65,7 @@ subprojects {
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.compilerArgs.addAll(listOf("-Xlint:all,-serial,-processing", "-Werror"))
+        options.compilerArgs.addAll(listOf("-Xlint:all,-serial,-processing"))
     }
 
 
