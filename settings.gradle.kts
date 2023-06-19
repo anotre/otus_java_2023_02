@@ -2,6 +2,7 @@ rootProject.name = "otusJava"
 
 include("l19hw09-jdbc")
 include("l21hw10-jpql")
+include("l22hw11-cache")
 
 pluginManagement {
     val dependencyManagement: String by settings
