@@ -30,6 +30,7 @@ allprojects {
 
     val testcontainersBom: String by project
     val lombok: String by project
+    val reflections: String by project
 
 
     apply(plugin = "io.spring.dependency-management")
@@ -40,6 +41,7 @@ allprojects {
                 mavenBom("org.testcontainers:testcontainers-bom:$testcontainersBom")
             }
             dependency("org.projectlombok:lombok:$lombok")
+            dependency("org.reflections:reflections:$reflections")
         }
 
     }
@@ -65,7 +67,7 @@ subprojects {
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.compilerArgs.addAll(listOf("-Xlint:all,-serial,-processing"))
+        options.compilerArgs.addAll(listOf("-Xlint:all,-serial,-processing", "-parameters"))
     }
 
 
