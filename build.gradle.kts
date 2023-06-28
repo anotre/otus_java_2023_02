@@ -31,6 +31,9 @@ allprojects {
     val testcontainersBom: String by project
     val lombok: String by project
 
+    val jetty: String by project
+    val freemarker: String by project
+
 
     apply(plugin = "io.spring.dependency-management")
     dependencyManagement {
@@ -40,6 +43,15 @@ allprojects {
                 mavenBom("org.testcontainers:testcontainers-bom:$testcontainersBom")
             }
             dependency("org.projectlombok:lombok:$lombok")
+
+            dependency("org.eclipse.jetty:jetty-servlet:$jetty")
+            dependency("org.eclipse.jetty:jetty-server:$jetty")
+            dependency("org.eclipse.jetty:jetty-webapp:$jetty")
+            dependency("org.eclipse.jetty:jetty-security:$jetty")
+            dependency("org.eclipse.jetty:jetty-http:$jetty")
+            dependency("org.eclipse.jetty:jetty-io:$jetty")
+            dependency("org.eclipse.jetty:jetty-util:$jetty")
+            dependency("org.freemarker:freemarker:$freemarker")
         }
 
     }
@@ -50,6 +62,7 @@ allprojects {
 
             force("javax.servlet:servlet-api:2.4")
             force("commons-logging:commons-logging:1.1.1")
+            force("org.codehaus.jettison:jettison:1.1")
 
         }
     }

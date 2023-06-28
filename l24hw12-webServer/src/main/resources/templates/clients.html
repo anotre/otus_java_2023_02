@@ -1,0 +1,45 @@
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Управление клиентами</title>
+</head>
+<body>
+<h4>Регистрация клиента:</h4>
+<form id="newClientForm">
+    <label>
+        Имя:<br/>
+        <input type="text" name="name" required>
+    </label>
+    <br/>
+    <label>
+        Адрес:<br/>
+        <input type=text name="address" required>
+    </label>
+    <br/>
+    <label>
+        Номер телефона:<br/>
+        <input type=text name="phone" required>
+    </label>
+    <br/>
+    <input type="submit" value="Зарегистрировать клиента">
+</form>
+<br>
+<h4>Список клиентов:</h4>
+<table>
+    <tr>
+        <th><b>#</b></th>
+        <th><b>Имя</b></th>
+        <th><b>Адрес</b></th>
+        <th><b>Номер телефона</b></th>
+    </tr>
+    <#list clientsList as client>
+    <tr>
+        <th><b>${client?counter}</b></th>
+        <th><b>${client.getName()}</b></th>
+        <th><b>${client.getAddress().getStreet()}</b></th>
+        <th><b>${(client.getPhones())[0].getNumber()}</b></th>
+    </tr>
+    </#list>
+</table>
+<script src="script.js"></script>
+</body>
+</html>
