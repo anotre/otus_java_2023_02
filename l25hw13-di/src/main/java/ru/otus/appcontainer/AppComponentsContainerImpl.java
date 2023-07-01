@@ -148,19 +148,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         }
 
         for (Parameter parameter : parameters) {
-            if (!parameter.isNamePresent()) {
-                throw new NoParameterNameException(
-                    String.format("Method %s parameter has no name", method.getName()));
-            }
-
-            String parameterName = parameter.getName();
-
-            if (!this.appComponentsByName.containsKey(parameterName)) {
-                throw new NoSuchComponentException(
-                    String.format("There is no %s component to obtain as dependency", parameterName));
-            }
-
-            args.add(this.appComponentsByName.get(parameterName));
+            args.add(this.getAppComponent(parameter.getType()));
         }
 
         return args.toArray();
