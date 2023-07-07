@@ -5,6 +5,8 @@ include("l21hw10-jpql")
 include("l22hw11-cache")
 include("l24hw12-webServer")
 
+include("l28hw14-springDataJdbc")
+
 pluginManagement {
     val dependencyManagement: String by settings
     val springframeworkBoot: String by settings
