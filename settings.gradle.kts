@@ -3,6 +3,7 @@ rootProject.name = "otusJava"
 include("l19hw09-jdbc")
 include("l21hw10-jpql")
 include("l22hw11-cache")
+include("l24hw12-webServer")
 
 include("l25hw13-di")
 
