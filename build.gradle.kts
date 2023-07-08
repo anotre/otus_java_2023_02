@@ -30,6 +30,7 @@ allprojects {
 
     val testcontainersBom: String by project
     val lombok: String by project
+    val reflections: String by project
 
     val jetty: String by project
     val freemarker: String by project
@@ -43,7 +44,7 @@ allprojects {
                 mavenBom("org.testcontainers:testcontainers-bom:$testcontainersBom")
             }
             dependency("org.projectlombok:lombok:$lombok")
-
+            dependency("org.reflections:reflections:$reflections")
             dependency("org.eclipse.jetty:jetty-servlet:$jetty")
             dependency("org.eclipse.jetty:jetty-server:$jetty")
             dependency("org.eclipse.jetty:jetty-webapp:$jetty")
