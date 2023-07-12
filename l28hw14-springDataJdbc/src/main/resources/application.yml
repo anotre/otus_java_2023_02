@@ -1,6 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5430/demoDB
+    dialect:
     username: usr
     password: pwd
   flyway:

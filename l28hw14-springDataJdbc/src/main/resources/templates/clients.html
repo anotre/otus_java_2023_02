@@ -1,4 +1,4 @@
-<html lang="ru" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Управление клиентами</title>
 </head>
@@ -31,14 +31,12 @@
         <th><b>Адрес</b></th>
         <th><b>Номер телефона</b></th>
     </tr>
-    <#list clientsList as client>
-    <tr>
-        <th><b>${client?counter}</b></th>
-        <th><b>${client.getName()}</b></th>
-        <th><b>${client.getAddress().getStreet()}</b></th>
-        <th><b>${(client.getPhones())[0].getNumber()}</b></th>
+    <tr th:each="client,iterStat : ${clients}">
+        <th><b th:text="${iterStat.count}"></b></th>
+        <th><b th:text="${client.getName()}"></b></th>
+        <th><b th:text="${client.getAddress().getStreet()}"></b></th>
+        <th><b th:text="${(client.getPhones())[0].getNumber()}"></b></th>
     </tr>
-    </#list>
 </table>
 <script src="script.js"></script>
 </body>
