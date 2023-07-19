@@ -35,7 +35,6 @@ allprojects {
     val jetty: String by project
     val freemarker: String by project
 
-
     apply(plugin = "io.spring.dependency-management")
     dependencyManagement {
         dependencies {
