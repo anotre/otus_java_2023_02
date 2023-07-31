@@ -6,6 +6,7 @@ include("l22hw11-cache")
 include("l24hw12-webServer")
 include("l25hw13-di")
 include("l28hw14-springDataJdbc")
+include("l31hw15-concurrentCollections")
 
 pluginManagement {
     val dependencyManagement: String by settings
