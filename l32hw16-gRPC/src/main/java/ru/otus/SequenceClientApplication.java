@@ -1,0 +1,40 @@
+package ru.otus;
+
+import ru.otus.protobuf.generated.RemoteSequenceServiceGrpc;
+import ru.otus.protobuf.generated.SequenceElementMessage;
+import ru.otus.protobuf.generated.SequenceRangeMessage;
+import ru.otus.service.SequenceClientService;
+
+import io.grpc.ManagedChannelBuilder;
+import java.util.concurrent.CountDownLatch;
+
+public class SequenceClientApplication {
+    private static final String SERVER_HOST = "localhost";
+    private static final int SERVER_PORT = 8190;
+    private static final int SEQUENCE_FROM = 0;
+    private static final int SEQUENCE_TO = 30;
+
+    private static final int INNER_SEQUENCE_FROM = 0;
+    private static final int INNER_SEQUENCE_TO = 50;
+    public static void main(String[] args) throws InterruptedException {
+        var channel = ManagedChannelBuilder.forAddress(SERVER_HOST, SERVER_PORT)
+                .usePlaintext()
+                .build(); // убрать
+        var stub = RemoteSequenceServiceGrpc.newStub(channel);
+        var latch = new CountDownLatch(1);
+        var streamObserver = new StreamObserverImpl<SequenceElementMessage>();
+        var sequenceClientService = new SequenceClientService<SequenceElementMessage>(stub, streamObserver, latch);
+        streamObserver.addListener(sequenceClientService);
+        var sequenceRange = SequenceRangeMessage
+                .newBuilder()
+                .setFrom(SEQUENCE_FROM)
+                .setTo(SEQUENCE_TO)
+                .build();
+        sequenceClientService.getSequence(sequenceRange);
+        sequenceClientService.printInternalSequence(INNER_SEQUENCE_FROM, INNER_SEQUENCE_TO);
+
+        latch.await();
+        streamObserver.removeListener(sequenceClientService);
+        channel.shutdown();
+    }
+}
