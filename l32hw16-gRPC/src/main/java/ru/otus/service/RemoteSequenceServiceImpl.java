@@ -3,6 +3,7 @@ package ru.otus.service;
 import ru.otus.model.SequenceElement;
 import ru.otus.protobuf.generated.RemoteSequenceServiceGrpc;
 import ru.otus.protobuf.generated.SequenceElementMessage;
+import ru.otus.protobuf.generated.SequenceElementMessageOrBuilder;
 import ru.otus.protobuf.generated.SequenceRangeMessage;
 
 import io.grpc.stub.StreamObserver;
