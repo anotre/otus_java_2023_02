@@ -19,5 +19,4 @@ pluginManagement {
         id("com.github.johnrengelman.shadow") version johnrengelmanShadow
     }
 }
-
-
+include("l34hw17-executors")
