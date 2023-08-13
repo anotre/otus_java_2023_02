@@ -1,49 +1,54 @@
 package ru.otus.service;
 
-import ru.otus.model.SequenceElement;
+import ru.otus.SequenceStreamObserver;
 import ru.otus.protobuf.generated.RemoteSequenceServiceGrpc;
 import ru.otus.protobuf.generated.SequenceElementMessage;
-import ru.otus.protobuf.generated.SequenceElementMessageOrBuilder;
 import ru.otus.protobuf.generated.SequenceRangeMessage;
 
-import io.grpc.stub.StreamObserver;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class SequenceClientService<T extends SequenceElementMessageOrBuilder> {
+public class SequenceClientService {
     private final RemoteSequenceServiceGrpc.RemoteSequenceServiceStub gRPCStub;
-    private final StreamObserver<SequenceElementMessage> streamObserver;
-    private final ArrayBlockingQueue<SequenceElementMessage> sequenceElementMessagesStorage;
+    private final SequenceStreamObserver<SequenceElementMessage> streamObserver;
 
-    public SequenceClientService(RemoteSequenceServiceGrpc.RemoteSequenceServiceStub gRPCStub, StreamObserver<SequenceElementMessage> streamObserver, ArrayBlockingQueue<SequenceElementMessage> sequenceElementMessagesStorage) {
+    public SequenceClientService(RemoteSequenceServiceGrpc.RemoteSequenceServiceStub gRPCStub,
+                                 SequenceStreamObserver<SequenceElementMessage> streamObserver) {
         this.streamObserver = streamObserver;
         this.gRPCStub = gRPCStub;
-        this.sequenceElementMessagesStorage = sequenceElementMessagesStorage;
     }
 
     public void getSequence(SequenceRangeMessage sequenceRange) {
         this.gRPCStub.getSequence(sequenceRange, this.streamObserver);
     }
 
-    public void printInternalSequence(int from, int to) throws InterruptedException {
+    public void printInternalSequence(int from, int to) {
         final int COEFFICIENT_OF_VARIATION = 1;
-        int currentValue = from;
+        var executor = Executors.newScheduledThreadPool(1);
+        AtomicInteger currentIteration = new AtomicInteger(from);
+        AtomicInteger currentValue = new AtomicInteger(from);
 
-        for (int i  = from; i <= to; i++) {
-            int lastSequenceElementValue = 0;
-            var sequenceElementMessage = sequenceElementMessagesStorage.poll();
+        Runnable task = () -> {
+                currentValue.set(currentValue.get() + this.getNextValue() + COEFFICIENT_OF_VARIATION);
+                System.out.printf("currentValue: %d\n", currentValue.get());
 
-            if (sequenceElementMessage != null) {
-                lastSequenceElementValue = this.getSequenceElement(sequenceElementMessage).getValue();
-            }
+                if (currentIteration.incrementAndGet() > to) {
+                    executor.shutdown();
+                }
+        };
 
-            currentValue = currentValue + lastSequenceElementValue + COEFFICIENT_OF_VARIATION;
-            System.out.printf("currentValue: %d\n", currentValue);
-            Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-        }
+        executor.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
     }
 
-    public SequenceElement getSequenceElement(SequenceElementMessage sequenceElementMessage) {
-        return new SequenceElement(sequenceElementMessage.getSequenceElement());
+    private int getNextValue() {
+        int nextValue = 0;
+        var lastValue = this.streamObserver.getLastSequenceElementMessageAndReset();
+
+        if (lastValue != null) {
+            nextValue = lastValue.getSequenceElement();
+        }
+
+        return nextValue;
     }
 }
