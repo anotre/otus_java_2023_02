@@ -27,7 +27,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
     }
-
+    val protobufBom: String by project
     val testcontainersBom: String by project
     val lombok: String by project
     val reflections: String by project
@@ -35,12 +35,15 @@ allprojects {
     val jetty: String by project
     val freemarker: String by project
 
+    val grpc: String by project
+
     apply(plugin = "io.spring.dependency-management")
     dependencyManagement {
         dependencies {
             imports {
                 mavenBom(BOM_COORDINATES)
                 mavenBom("org.testcontainers:testcontainers-bom:$testcontainersBom")
+                mavenBom("com.google.protobuf:protobuf-bom:$protobufBom")
             }
             dependency("org.projectlombok:lombok:$lombok")
             dependency("org.reflections:reflections:$reflections")
@@ -52,6 +55,9 @@ allprojects {
             dependency("org.eclipse.jetty:jetty-io:$jetty")
             dependency("org.eclipse.jetty:jetty-util:$jetty")
             dependency("org.freemarker:freemarker:$freemarker")
+            dependency("io.grpc:grpc-netty:$grpc")
+            dependency("io.grpc:grpc-protobuf:$grpc")
+            dependency("io.grpc:grpc-stub:$grpc")
         }
 
     }
@@ -63,6 +69,7 @@ allprojects {
             force("javax.servlet:servlet-api:2.4")
             force("commons-logging:commons-logging:1.1.1")
             force("org.codehaus.jettison:jettison:1.1")
+            force("com.google.errorprone:error_prone_annotations:2.7.1")
 
         }
     }
@@ -80,7 +87,6 @@ subprojects {
         options.encoding = "UTF-8"
         options.compilerArgs.addAll(listOf("-Xlint:all,-serial,-processing"))
     }
-
 
     tasks.withType<Test> {
         useJUnitPlatform()
