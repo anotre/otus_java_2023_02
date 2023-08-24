@@ -8,6 +8,7 @@ include("l25hw13-di")
 include("l28hw14-springDataJdbc")
 include("l31hw15-concurrentCollections")
 include("l32hw16-gRPC")
+include("l34hw17-executors")
 
 pluginManagement {
     val dependencyManagement: String by settings
@@ -23,4 +24,3 @@ pluginManagement {
     }
 
 }
-
