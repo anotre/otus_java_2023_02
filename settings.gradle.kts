@@ -9,6 +9,8 @@ include("l28hw14-springDataJdbc")
 include("l31hw15-concurrentCollections")
 include("l32hw16-gRPC")
 include("l34hw17-executors")
+include("l37hw18-webFlux:client-service")
+include("l37hw18-webFlux:datastore-service")
 
 pluginManagement {
     val dependencyManagement: String by settings
@@ -24,3 +26,4 @@ pluginManagement {
     }
 
 }
+
