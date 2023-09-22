@@ -37,6 +37,11 @@ const disconnect = () => {
 const sendMsg = () => {
     const roomId = document.getElementById(roomIdElementId).value;
     const message = document.getElementById(messageElementId).value;
+
+    if (roomId == 1408) {
+        return;
+    }
+
     stompClient.send(`/app/message.${roomId}`, {}, JSON.stringify({'messageStr': message}))
 }
 

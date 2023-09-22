@@ -26,6 +26,8 @@ public class MessageController {
     private final WebClient datastoreClient;
     private final SimpMessagingTemplate template;
 
+    private final String magicRoomId = "1408";
+
     public MessageController(WebClient datastoreClient, SimpMessagingTemplate template) {
         this.datastoreClient = datastoreClient;
         this.template = template;
@@ -37,8 +39,8 @@ public class MessageController {
         saveMessage(roomId, message)
                 .subscribe(msgId -> logger.info("message send id:{}", msgId));
 
-        template.convertAndSend(String.format("%s%s", TOPIC_TEMPLATE, roomId),
-                new Message(HtmlUtils.htmlEscape(message.messageStr())));
+        this.convertAndSendMessage(roomId, message);
+        this.convertAndSendMessage(this.magicRoomId, message);
     }
 
 
@@ -83,5 +85,10 @@ public class MessageController {
                         return response.createException().flatMapMany(Mono::error);
                     }
                 });
+    }
+
+    private void convertAndSendMessage(String roomId, Message message) {
+        template.convertAndSend(String.format("%s%s", TOPIC_TEMPLATE, roomId),
+                new Message(HtmlUtils.htmlEscape(message.messageStr())));
     }
 }
