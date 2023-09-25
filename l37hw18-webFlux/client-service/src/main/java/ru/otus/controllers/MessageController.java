@@ -16,6 +16,7 @@ import org.springframework.web.util.HtmlUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.domain.Message;
+import ru.otus.domain.MessageDto;
 
 @Controller
 public class MessageController {
@@ -26,8 +27,6 @@ public class MessageController {
     private final WebClient datastoreClient;
     private final SimpMessagingTemplate template;
 
-    private final String magicRoomId = "1408";
-
     public MessageController(WebClient datastoreClient, SimpMessagingTemplate template) {
         this.datastoreClient = datastoreClient;
         this.template = template;
@@ -37,12 +36,12 @@ public class MessageController {
     public void getMessage(@DestinationVariable String roomId, Message message) {
         logger.info("get message:{}, roomId:{}", message, roomId);
         saveMessage(roomId, message)
-                .subscribe(msgId -> logger.info("message send id:{}", msgId));
-
-        this.convertAndSendMessage(roomId, message);
-        this.convertAndSendMessage(this.magicRoomId, message);
+                .subscribe(msgDto -> {
+                    logger.info("message send id:{}, to room with id: {}", msgDto.messageId(), msgDto.roomId());
+                    template.convertAndSend(String.format("%s%s", TOPIC_TEMPLATE, msgDto.roomId()),
+                            new Message(HtmlUtils.htmlEscape(msgDto.messageStr())));
+                });
     }
-
 
     @EventListener
     public void handleSessionSubscribeEvent(SessionSubscribeEvent event) {
@@ -56,7 +55,7 @@ public class MessageController {
 
         getMessagesByRoomId(roomId)
                 .doOnError(ex -> logger.error("getting messages for roomId:{} failed", roomId, ex))
-                .subscribe(message -> template.convertAndSend(simpDestination, message));
+                .subscribe(messageDto -> template.convertAndSend(simpDestination, messageDto));
     }
 
     private long parseRoomId(String simpDestination) {
@@ -68,27 +67,23 @@ public class MessageController {
         }
     }
 
-    private Mono<Long> saveMessage(String roomId, Message message) {
+    private Flux<MessageDto> saveMessage(String roomId, Message message) {
+
         return datastoreClient.post().uri(String.format("/msg/%s", roomId))
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(message)
-                .exchangeToMono(response -> response.bodyToMono(Long.class));
+                .exchangeToFlux(response -> response.bodyToFlux(MessageDto.class));
     }
 
-    private Flux<Message> getMessagesByRoomId(long roomId) {
+    private Flux<MessageDto> getMessagesByRoomId(long roomId) {
         return datastoreClient.get().uri(String.format("/msg/%s", roomId))
                 .accept(MediaType.APPLICATION_NDJSON)
                 .exchangeToFlux(response -> {
                     if (response.statusCode().equals(HttpStatus.OK)) {
-                        return response.bodyToFlux(Message.class);
+                        return response.bodyToFlux(MessageDto.class);
                     } else {
                         return response.createException().flatMapMany(Mono::error);
                     }
                 });
-    }
-
-    private void convertAndSendMessage(String roomId, Message message) {
-        template.convertAndSend(String.format("%s%s", TOPIC_TEMPLATE, roomId),
-                new Message(HtmlUtils.htmlEscape(message.messageStr())));
     }
 }

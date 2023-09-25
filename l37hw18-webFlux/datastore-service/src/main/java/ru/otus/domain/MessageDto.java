@@ -1,4 +1,4 @@
 package ru.otus.domain;
 
-public record MessageDto(String messageStr) {
+public record MessageDto(long messageId, String messageStr, String roomId) {
 }
